@@ -1,3 +1,4 @@
+
 name: Compilar Auto Drop
 
 on:
@@ -9,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
@@ -19,8 +20,13 @@ jobs:
           gradle-version: '9.4.0'
 
       - name: Extrair projeto
+        run: unzip autodrop-fabric-source.zip -d source
+
+      - name: Corrigir ação de inventário
         run: |
-          unzip autodrop-fabric-source.zip -d source
+          FILE=source/AutoDrop-Fabric-26.1.2/src/main/java/br/autodrop/AutoDropController.java
+          sed -i 's/import net.minecraft.world.inventory.ClickType;/import net.minecraft.world.inventory.SlotActionType;/' "$FILE"
+          sed -i 's/ClickType.THROW/SlotActionType.THROW/' "$FILE"
 
       - name: Compilar
         working-directory: source/AutoDrop-Fabric-26.1.2
